@@ -68,6 +68,61 @@ File middleware `proxy.js` berhasil dibuat di root folder, berfungsi untuk mence
 **Perbaikan:**
 Tidak ada perbaikan.
 
+## US-07 List produk admin dari database
+
+**Prompt:**
+Baca docs/user-stories.md bagian US-07. Ubah app/admin/page.jsx supaya daftar produk diambil dari tabel "produk" di Supabase, di sisi server, memakai koneksi sesi admin di lib/supabase/auth.js. Tampilkan produk dengan komponen TabelProduk yang sudah ada, termasuk nama kategori dari relasi. Kalau gagal mengambil data, tampilkan pesan error yang jelas di halaman. Kalau tabel kosong, tampilkan tulisan "Belum ada produk". Hapus CatatanBelumAktif dari halaman ini.
+
+**Hasil:**
+Halaman `/admin` mengambil produk dari database dengan relasi kategori (`kategori:kategori_id`). Daftar tampil lengkap dengan nama kategori dan tombol Ubah serta Hapus yang berfungsi.
+
+**Perbaikan:**
+Tidak ada perbaikan signifikan. Kolom kategori teks diganti relasi ke tabel `kategori` mengikuti perubahan skema.
+
+## US-08 Tambah produk
+
+**Prompt:**
+Baca docs/user-stories.md bagian US-08. Buat form di /admin/produk/baru menyimpan produk baru ke tabel "produk" di Supabase lewat Server Action tambahProdukAction di app/admin/actions.js. Field kategori berupa dropdown dari tabel "kategori". Validasi di server: nama wajib diisi, harga angka nol atau lebih, kategori harus ada di database. Action memeriksa login admin. Berhasil menyimpan kembali ke /admin; gagal menampilkan pesan error yang jelas. Hapus CatatanBelumAktif dari halaman ini.
+
+**Hasil:**
+`FormProduk` tersambung ke `tambahProdukAction` memakai `useActionState`. Dropdown kategori diambil dari database. Jika belum ada kategori, halaman meminta admin membuat kategori dulu. Validasi dan proteksi login berjalan di server.
+
+**Perbaikan:**
+Tidak ada perbaikan signifikan.
+
+## US-09 Ubah produk
+
+**Prompt:**
+Baca docs/user-stories.md bagian US-09. Buat form di /admin/produk/[id]/ubah terisi data lama dari tabel "produk" di Supabase, lalu menyimpan perubahan lewat Server Action ubahProdukAction di app/admin/actions.js. Field kategori berupa dropdown dari tabel "kategori" dengan pilihan lama terpilih. Validasi dan proteksi login sama seperti tambah produk. Produk yang tidak ada menampilkan halaman "tidak ditemukan". Hapus CatatanBelumAktif dari halaman ini.
+
+**Hasil:**
+Halaman mengambil produk dan daftar kategori dari database. Form terisi data lama termasuk kategori terpilih. Perubahan tersimpan ke database lalu kembali ke /admin.
+
+**Perbaikan:**
+Tidak ada perbaikan signifikan.
+
+## US-10 Hapus produk
+
+**Prompt:**
+Baca docs/user-stories.md bagian US-10. Buat tombol "Hapus" di TabelProduk meminta konfirmasi, lalu menghapus produk dari tabel "produk" lewat Server Action hapusProdukAction di app/admin/actions.js. Action memeriksa login admin di server. Setelah hapus, daftar produk dimuat ulang.
+
+**Hasil:**
+Komponen baru `TombolHapus` menampilkan dialog konfirmasi sebelum submit. `hapusProdukAction` menghapus baris dari database dan memuat ulang halaman admin. Tanpa login, aksi ditolak di server.
+
+**Perbaikan:**
+Tidak ada perbaikan signifikan.
+
+## US-11 Filter kategori
+
+**Prompt:**
+Baca docs/user-stories.md bagian US-11. Ubah halaman / supaya pengunjung memilih kategori dulu dari tabel "kategori" di Supabase, lalu melihat produk per kategori di halaman /kategori/[slug] berdasarkan slug kategori. Setiap kartu kategori menampilkan jumlah produk. Kategori atau produk yang tidak ada menampilkan halaman "tidak ditemukan" atau pesan kosong yang jelas.
+
+**Hasil:**
+Halaman `/` menampilkan kartu kategori dari database beserta jumlah produk tiap kategori. Halaman baru `/kategori/[slug]` menampilkan produk kategori tersebut dengan komponen KartuProduk. Kriteria "berdasarkan kategori atau mencari nama" terpenuhi lewat filter kategori; pencarian teks belum dibuat.
+
+**Perbaikan:**
+Tidak ada perbaikan signifikan.
+
 ## Debugging dan fitur bonus
 
 ### Error Fetch pada US-01
@@ -113,3 +168,23 @@ Membuat tempat pencatatan khusus bagi tugas pendukung yang tidak terikat secara 
 
 **Hasil:**
 Bagian **Prompt di Luar User Story** (bagian ini) ditambahkan pada `PROMPTS.md` guna mencatat interaksi *custom*.
+
+### 4. Tema Yaya's Bakery dan Tabel Kategori
+**Prompt:**
+ubah tema toko ini menjadi toko roti dengan nama "yaya's bakery" yang akan kamu lakukan adalah tambahkan tabel kategori produk di schema sql nya. jangan lupa sesuaikan tabel produk yang sudah dibuat. kemudian tambah halaman agar produk dilihat dari kategori nya terlebih dahulu. tambahkan halaman CRUD kategori pada admin dan juga field kategori pada penambahan produk.
+
+**Konteks:**
+Mengubah tema toko menjadi bakery, mengganti kolom `kategori` teks di tabel `produk` menjadi relasi `kategori_id` ke tabel baru `kategori` (dengan `slug` untuk URL), menampilkan produk pengunjung per kategori, serta menambah CRUD kategori di admin.
+
+**Hasil:**
+Identitas toko di `lib/toko.js` menjadi Yaya's Bakery. `docs/schema.sql` mendapat tabel `kategori` (RLS + policy) dan migrasi `produk.kategori` menjadi `kategori_id` dengan seed bakery. Halaman `/` menampilkan daftar kategori, halaman baru `/kategori/[slug]` menampilkan produk per kategori, dan halaman detail memakai relasi kategori. Admin mendapat rute `/admin/kategori`, `/admin/kategori/baru`, `/admin/kategori/[id]/ubah` dengan Server Action tambah, ubah, hapus (hapus ditolak bila kategori masih dipakai produk). `FormProduk` memakai dropdown kategori dan simpan produk tersambung ke database. Build `npm run build` sukses.
+
+### 5. Data Dummy Produk
+**Prompt:**
+buat data dummy untuk produk. buatkan dalam file yang terpisah saja
+
+**Konteks:**
+Menambah data contoh produk bakery tanpa mengotori `docs/schema.sql`.
+
+**Hasil:**
+File baru `docs/seed-dummy.sql` berisi 12 produk dummy (3 per kategori). Aman dijalankan ulang karena produk yang namanya sudah ada dilewati. Dijalankan setelah `docs/schema.sql` di SQL Editor Supabase.

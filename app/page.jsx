@@ -1,16 +1,24 @@
-import KartuProduk from "@/components/KartuProduk";
+import Link from "next/link";
 import { toko } from "@/lib/toko";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function HalamanKatalog() {
-
   const supabase = createServerSupabase();
-  const { data: daftarProduk, error } = await supabase
-    .from("produk")
+  const { data: daftarKategori, error } = await supabase
+    .from("kategori")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("nama");
+
+  let jumlahPerKategori = {};
+  if (!error && daftarKategori) {
+    const { data: daftarProduk } = await supabase.from("produk").select("kategori_id");
+    jumlahPerKategori = (daftarProduk || []).reduce((acc, produk) => {
+      acc[produk.kategori_id] = (acc[produk.kategori_id] || 0) + 1;
+      return acc;
+    }, {});
+  }
 
   return (
     <>
@@ -22,18 +30,32 @@ export default async function HalamanKatalog() {
         <p className="mt-4 text-sm text-teks-lembut">{toko.jamBuka}</p>
       </section>
 
-      <section aria-labelledby="judul-produk" className="flex flex-col gap-5">
-        <h2 id="judul-produk" className="text-xl font-bold">
-          Produk kami
+      <section aria-labelledby="judul-kategori" className="flex flex-col gap-5 pb-12">
+        <h2 id="judul-kategori" className="text-xl font-bold">
+          Pilih kategori
         </h2>
         {error ? (
-          <p className="text-red-500">Gagal mengambil daftar produk: {error.message}</p>
-        ) : !daftarProduk || daftarProduk.length === 0 ? (
-          <p className="text-teks-lembut">Belum ada produk</p>
+          <p className="text-bahaya">Gagal mengambil daftar kategori: {error.message}</p>
+        ) : !daftarKategori || daftarKategori.length === 0 ? (
+          <p className="text-teks-lembut">Belum ada kategori</p>
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {daftarProduk.map((produk) => (
-              <KartuProduk key={produk.id} produk={produk} />
+            {daftarKategori.map((kategori) => (
+              <Link
+                key={kategori.id}
+                href={`/kategori/${kategori.slug}`}
+                className="group flex flex-col gap-2 rounded-2xl border border-garis bg-latar p-5 hover:border-utama"
+              >
+                <h3 className="font-bold leading-snug group-hover:text-utama">
+                  {kategori.nama}
+                </h3>
+                {kategori.deskripsi && (
+                  <p className="text-sm text-teks-lembut">{kategori.deskripsi}</p>
+                )}
+                <p className="mt-auto text-sm font-semibold text-teks-lembut">
+                  {jumlahPerKategori[kategori.id] || 0} produk
+                </p>
+              </Link>
             ))}
           </div>
         )}

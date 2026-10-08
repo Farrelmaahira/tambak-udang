@@ -6,17 +6,22 @@ import { createServerSupabase } from "@/lib/supabase/server";
 
 export default async function HalamanDetailProduk({ params }) {
   const { id } = await params;
-  
+
   const supabase = createServerSupabase();
   const { data: produk, error } = await supabase
     .from("produk")
-    .select("*")
+    .select("*, kategori:kategori_id (id, nama, slug)")
     .eq("id", id)
     .single();
 
   if (error || !produk) {
     notFound();
   }
+
+  const namaKategori =
+    produk.kategori && typeof produk.kategori === "object"
+      ? produk.kategori.nama
+      : produk.kategori;
 
   return (
     <article className="grid gap-8 py-8 md:grid-cols-2 md:py-12">
@@ -29,7 +34,9 @@ export default async function HalamanDetailProduk({ params }) {
         <Link href="/" className="text-sm text-teks-lembut underline underline-offset-4 hover:text-utama">
           Kembali ke katalog
         </Link>
-        <p className="text-sm text-teks-lembut">{produk.kategori}</p>
+        {namaKategori && (
+          <p className="text-sm text-teks-lembut">{namaKategori}</p>
+        )}
         <h1 className="text-3xl font-extrabold leading-tight tracking-tight">{produk.nama}</h1>
         <p className="self-start rounded-md bg-harga-latar px-3 py-1 text-xl font-bold text-harga">
           {formatRupiah(produk.harga)}

@@ -1,15 +1,30 @@
 import NavAdmin from "@/components/NavAdmin";
 import FormProduk from "@/components/FormProduk";
-import CatatanBelumAktif from "@/components/CatatanBelumAktif";
+import { tambahProdukAction } from "@/app/admin/actions";
+import { createClient } from "@/lib/supabase/auth";
 
-// US-08 (bonus di jalur offline): tambah produk.
-export default function HalamanTambahProduk() {
+export default async function HalamanTambahProduk() {
+  const supabase = await createClient();
+  const { data: daftarKategori } = await supabase
+    .from("kategori")
+    .select("*")
+    .order("nama");
+
   return (
     <div className="flex flex-col gap-6 py-8">
       <NavAdmin />
       <h1 className="text-2xl font-extrabold">Tambah produk</h1>
-      <CatatanBelumAktif>Simpan produk belum berfungsi: lihat US-08.</CatatanBelumAktif>
-      <FormProduk labelTombol="Simpan produk" />
+      {(daftarKategori || []).length === 0 ? (
+        <p className="text-teks-lembut">
+          Buat kategori dulu sebelum menambah produk.
+        </p>
+      ) : (
+        <FormProduk
+          daftarKategori={daftarKategori || []}
+          action={tambahProdukAction}
+          labelTombol="Simpan produk"
+        />
+      )}
     </div>
   );
 }
