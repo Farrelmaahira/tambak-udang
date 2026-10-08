@@ -31,6 +31,13 @@ export async function logoutAction() {
 }
 
 export async function changePasswordAction(prevState, formData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Anda harus login untuk melakukan aksi ini." };
+  }
+
   const passwordBaru = formData.get("password_baru");
   const konfirmasi = formData.get("konfirmasi_password");
 
@@ -46,7 +53,6 @@ export async function changePasswordAction(prevState, formData) {
     return { error: "Password baru dan konfirmasi tidak cocok." };
   }
 
-  const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({
     password: passwordBaru,
   });
