@@ -28,7 +28,7 @@ export default async function HalamanKategori({ params }) {
   return (
     <>
       <section className="py-8">
-        <Link href="/" className="text-sm text-teks-lembut underline underline-offset-4 hover:text-utama">
+        <Link href="/kategori" className="text-sm text-teks-lembut underline underline-offset-4 hover:text-utama">
           Semua kategori
         </Link>
         <h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight">{kategori.nama}</h1>

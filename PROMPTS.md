@@ -118,10 +118,10 @@ Tidak ada perbaikan signifikan.
 Baca docs/user-stories.md bagian US-11. Ubah halaman / supaya pengunjung memilih kategori dulu dari tabel "kategori" di Supabase, lalu melihat produk per kategori di halaman /kategori/[slug] berdasarkan slug kategori. Setiap kartu kategori menampilkan jumlah produk. Kategori atau produk yang tidak ada menampilkan halaman "tidak ditemukan" atau pesan kosong yang jelas.
 
 **Hasil:**
-Halaman `/` menampilkan kartu kategori dari database beserta jumlah produk tiap kategori. Halaman baru `/kategori/[slug]` menampilkan produk kategori tersebut dengan komponen KartuProduk. Kriteria "berdasarkan kategori atau mencari nama" terpenuhi lewat filter kategori; pencarian teks belum dibuat.
+Halaman `/` menampilkan semua produk dari database beserta form pencarian. Kata kunci dibaca dari `searchParams` dan difilter di database dengan `ilike` pada kolom nama. Halaman baru `/kategori` menampilkan kartu kategori beserta jumlah produk. Navigasi Header mendapat link "Semua produk" dan "Kategori". Halaman `/kategori/[slug]` tetap menampilkan produk kategori tersebut. Kriteria "berdasarkan kategori atau mencari nama" kini terpenuhi dua-duanya.
 
 **Perbaikan:**
-Tidak ada perbaikan signifikan.
+Halaman `/` yang sebelumnya daftar kategori dipindah ke `/kategori` agar pencarian produk menjadi fokus utama.
 
 ## Debugging dan fitur bonus
 
@@ -188,3 +188,33 @@ Menambah data contoh produk bakery tanpa mengotori `docs/schema.sql`.
 
 **Hasil:**
 File baru `docs/seed-dummy.sql` berisi 12 produk dummy (3 per kategori). Aman dijalankan ulang karena produk yang namanya sudah ada dilewati. Dijalankan setelah `docs/schema.sql` di SQL Editor Supabase.
+
+### 6. Katalog Produk dan Pencarian
+**Prompt:**
+ubah halaman pada route / untuk menampilkan produk nya dulu, tambahkan fitur search berdasarkan nama produk nya (lakukan search nya ini menggunakan query agar lebih akurat). tambahkan navigasi pada guest user agar bisa melihat kategori yang ada. ketika masuk halaman kategori tampilkan data data produk yang ada pada kategori tersebut.
+
+**Konteks:**
+Memperbarui US-11: halaman `/` kembali menampilkan produk dengan pencarian nama di sisi server, navigasi kategori untuk tamu, dan daftar kategori pindah ke `/kategori`.
+
+**Hasil:**
+Halaman `/` menampilkan semua produk dengan form pencarian GET yang difilter via `ilike` di database. `Header` mendapat navigasi "Semua produk" dan "Kategori". Halaman baru `/kategori` menampilkan kartu kategori. Build `npm run build` sukses.
+
+### 7. Halaman Proper: Hero, About, Contact
+**Prompt:**
+buatkan halaman yang lebih proper untuk website ini. tambahkan hero section, about section, contact section (beserta map). gunakan skill antislop ui untuk mengerjakan hal ini
+
+**Konteks:**
+Merapikan halaman `/` memakai skill antislop mode during: hero dengan dua CTA nyata, about dari data toko, contact dengan tombol WhatsApp dan embed peta.
+
+**Hasil:**
+Halaman `/` mendapat hero (judul, tagline, CTA ke `#produk` dan `/kategori`, foto produk asli), section `#tentang` dari data toko, dan section `#kontak` (tombol WhatsApp + iframe peta dari alamat toko). `Header` mendapat link Tentang dan Kontak path absolut. Grid produk dan pencarian tidak berubah. Build `npm run build` sukses.
+
+### 8. Navigasi Gaya Referensi Bakery
+**Prompt:**
+scan DESIGN.md dan referensi di design_references, sesuaikan navigasi sesuai navigasi yang sudah dibuat. Lalu: gunakan header saja (tanpa top bar info).
+
+**Konteks:**
+Menyesuaikan `Header` dengan referensi tema bakery (logo kiri, menu, tombol pesan di kanan) memakai skill antislop mode during, tanpa top bar info.
+
+**Hasil:**
+`Header` satu baris: logo, menu Semua produk, Kategori, Tentang, Kontak, dan tombol "Pesan via WhatsApp" ke nomor toko. Sentence case ikut `DESIGN.md`, `flex-wrap` untuk HP. Build `npm run build` sukses.
